@@ -4,29 +4,12 @@
 
 ## 1. 项目结构概览
 
-`ExternLua` 目录是 Lua 脚本项目的根目录。以下是其主要子目录和文件的功能：
+一个典型的Mod项目结构如下：
 
 ```
-ExternLua/
-├── X64/            # 可能包含 x64 平台相关的二进制文件或库
-├── X86/            # 可能包含 x86 平台相关的二进制文件或库
-├── libs/           # Lua 库目录
-│   ├── json.lua    # JSON 处理库 (dkjson 兼容)
-│   ├── stable.lua  # 通用工具库
-│   └── tl.lua      # Teal 语言运行时库 (如果使用 Teal 语言编写 Mod)
-├── mods/           # Mod 存放目录。每个 Mod 都在其自己的子目录中。
-├── system/         # 核心系统逻辑和工具
-│   ├── core/       # 核心系统子模块
-│   │   ├── maps/   # 地图相关资源或逻辑
-│   │   └── maps.lua# 地图处理逻辑
-│   ├── event_system.lua  # 游戏事件系统
-│   ├── global_var.lua    # 全局变量定义（可能包含其他全局配置或数据）
-│   ├── mapManager.lua    # 地图管理逻辑
-│   ├── mod_loader.lua    # Mod 加载器逻辑
-│   ├── plant_base.lua    # 植物基类定义和相关功能
-│   └── system_events.lua # 系统事件的定义或处理
-├── main.lua        # Lua 系统的主要入口点，负责初始化和启动
-└── version.txt     # 项目或 Lua 系统的版本信息
+my-mod/
+├── main.lua        # Mod程序入口
+└── manifest.lua    # Mod清单文件
 ```
 
 ## 2. 如何制作一个 Mod
@@ -35,7 +18,7 @@ ExternLua/
 
 ### 2.1. 创建 Mod 目录
 
-在 `ExternLua/mods/` 目录下为你的 Mod 创建一个新的文件夹。这个文件夹的名称将作为你的 Mod 的唯一标识符。
+在游戏根目录下 `ExternLua/mods/` 目录下为你的 Mod 创建一个新的文件夹。这个文件夹的名称将作为你的 Mod 的唯一标识符。
 
 **示例**: 如果你的 Mod 叫做 `MyAwesomeMod`，则创建 `ExternLua/mods/MyAwesomeMod/`。
 
@@ -47,9 +30,6 @@ ExternLua/
 -- ExternLua/mods/MyAwesomeMod/manifest.lua
 return {
     name = "MyAwesomeMod",         -- [必需] Mod 的唯一名称，建议与 Mod 目录名一致。
-    version = "1.0.0",             -- [必需] Mod 的版本号。
-    description = "这是一个非常棒的 Mod，它做了一些很酷的事情！", -- [可选] Mod 的简短描述。
-    author = "你的名字/你的团队",      -- [可选] Mod 的作者信息。
     dependencies = {               -- [可选] 如果你的 Mod 依赖于其他 Mod，在此处列出它们的 `name`。
         -- "AnotherModName",
         -- "SomeLibraryMod"
@@ -67,7 +47,7 @@ return {
 local MyAwesomeMod = {}
 
 --- Mod 的初始化函数。在 Mod 加载时被调用。
---- @param eventSystem table 游戏事件系统对象。
+--- @param eventSystem EventSystemAPI 游戏事件系统对象。
 --- @param modName string 当前 Mod 的名称。
 function MyAwesomeMod.init(eventSystem, modName)
     game.logMessage(modName .. ": 初始化中...")
@@ -97,7 +77,7 @@ end
 
 --- Mod 的卸载函数。在 Mod 被卸载或热重载时被调用。
 --- 在此函数中执行清理工作，例如取消注册事件监听器、释放资源等。
---- @param eventSystem table 游戏事件系统对象。
+--- @param eventSystem EventSystemAPI 游戏事件系统对象。
 --- @param modName string 当前 Mod 的名称。
 function MyAwesomeMod.unload(eventSystem, modName)
     game.logMessage(modName .. ": 正在卸载...")
@@ -208,7 +188,7 @@ return MyAwesomeMod
 *   **描述**: Lua 内置的全局变量，表示当前 Lua 解释器的版本字符串。
 *   **用途**: 检查 Lua 版本。
 
-### 3.6. `json` (Table)
+### 3.6. `json` (Module)
 
 *   **描述**: Lua JSON 库，用于 JSON 数据的编码和解码。
 *   **重要方法**:
@@ -216,7 +196,7 @@ return MyAwesomeMod
     *   `json.encode(luaTable)` (returns string): 将 Lua 表编码为 JSON 字符串。
 *   **用途**: Mod 处理配置数据、网络通信数据等 JSON 格式的数据。
 
-### 3.7. `tl` (Table)
+### 3.7. `tl` (Module)
 
 *   **描述**: Teal 语言相关的库，如果项目使用 Teal 编写，会用到。
 *   **重要方法**:
